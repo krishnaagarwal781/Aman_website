@@ -1,25 +1,24 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from bson import ObjectId
 
-# Connect to MongoDB
-client = MongoClient("mongodb://localhost:27017/")
-db = client["your_database"]
+from app.models.models import *
+from app.config.private import *
 
 # Define Pydantic models for request and response
 
 
 # Initialize FastAPI app
-app = FastAPI()
+commodityRouter = APIRouter()
 
 # Commodity endpoints
-@app.post("/create-commodity", response_model=Commodity)
+@commodityRouter.post("/commodity/create-commodity", response_model=Commodity, tags=['Commodity Routes'])
 async def create_commodity(commodity: Commodity):
     coll = db["commodities"]
     result = coll.insert_one(commodity.dict())
     created_commodity = coll.find_one({"_id": result.inserted_id}, {"_id": 0})
     return created_commodity
 
-@app.patch("/edit-commodity/{commodity_id}", response_model=Commodity)
+@commodityRouter.patch("/commodity/edit-commodity/{commodity_id}", response_model=Commodity, tags=['Commodity Routes'])
 async def edit_commodity(commodity_id: str, commodity_data: Commodity):
     coll = db["commodities"]
     coll.update_one({"_id": ObjectId(commodity_id)}, {"$set": commodity_data.dict()})
@@ -29,7 +28,7 @@ async def edit_commodity(commodity_id: str, commodity_data: Commodity):
     else:
         raise HTTPException(status_code=404, detail="Commodity not found")
 
-@app.post("/delete-commodity/{commodity_id}")
+@commodityRouter.post("/commodity/delete-commodity/{commodity_id}", tags=['Commodity Routes'])
 async def delete_commodity(commodity_id: str):
     coll = db["commodities"]
     result = coll.delete_one({"_id": ObjectId(commodity_id)})
@@ -38,7 +37,7 @@ async def delete_commodity(commodity_id: str):
     else:
         raise HTTPException(status_code=404, detail="Commodity not found")
 
-@app.get("/get-all-commodity", response_model=list[Commodity])
+@commodityRouter.get("/commodity/get-all-commodity", response_model=list[Commodity], tags=['Commodity Routes'])
 async def get_all_commodities():
     coll = db["commodities"]
     commodities = list(coll.find({}, {"_id": 0}))

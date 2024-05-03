@@ -1,32 +1,31 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from pydantic import BaseModel
 from bson import ObjectId
 
-# Connect to MongoDB
-client = MongoClient("mongodb://localhost:27017/")
-db = client["your_database"]
+from app.models.models import *
+from app.config.private import *
 
 # Define Pydantic models for request and response
 
 
 # Initialize FastAPI app
-app = FastAPI()
+businessRouter = APIRouter()
 
 # Business Form endpoints
-@app.post("/submit-business-form", response_model=BusinessForm)
+@businessRouter.post("/business/submit-business-form", response_model=BusinessForm, tags=['Business Form Routes'])
 async def submit_business_form(business_form: BusinessForm):
     coll = db["business_forms"]
     result = coll.insert_one(business_form.dict())
     created_business_form = coll.find_one({"_id": result.inserted_id}, {"_id": 0})
     return created_business_form
 
-@app.get("/get-all-business-form", response_model=list[BusinessForm])
+@businessRouter.get("/business/get-all-business-form", response_model=list[BusinessForm], tags=['Business Form Routes'])
 async def get_all_business_forms():
     coll = db["business_forms"]
     business_forms = list(coll.find({}, {"_id": 0}))
     return business_forms
 
-@app.patch("/edit-business-form/{business_id}", response_model=BusinessForm)
+@businessRouter.patch("/business/edit-business-form/{business_id}", response_model=BusinessForm, tags=['Business Form Routes'])
 async def edit_business_form(business_id: str, business_data: BusinessForm):
     coll = db["business_forms"]
     coll.update_one({"_id": ObjectId(business_id)}, {"$set": business_data.dict()})

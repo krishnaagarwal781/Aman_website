@@ -1,31 +1,30 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from bson import ObjectId
 
-# Connect to MongoDB
-client = MongoClient("mongodb://localhost:27017/")
-db = client["your_database"]
+from app.models.models import *
+from app.config.private import *
 
 # Define Pydantic models for request and response
 
 
 # Initialize FastAPI app
-app = FastAPI()
+categoryRouter = APIRouter()
 
 # Category endpoints
-@app.get("/all-category", response_model=list[Category])
+@categoryRouter.get("/category/all-category", response_model=list[Category], tags=['Category Routes'])
 async def get_all_categories():
     coll = db["categories"]
     categories = list(coll.find({}, {"_id": 0}))
     return categories
 
-@app.post("/add-category", response_model=Category)
+@categoryRouter.post("/category/add-category", response_model=Category, tags=['Category Routes'])
 async def add_category(category: Category):
     coll = db["categories"]
     result = coll.insert_one(category.dict())
     created_category = coll.find_one({"_id": result.inserted_id}, {"_id": 0})
     return created_category
 
-@app.patch("/edit-category/{category_id}", response_model=Category)
+@categoryRouter.patch("/category/edit-category/{category_id}", response_model=Category, tags=['Category Routes'])
 async def edit_category(category_id: str, category_data: Category):
     coll = db["categories"]
     coll.update_one({"_id": ObjectId(category_id)}, {"$set": category_data.dict()})
@@ -35,7 +34,7 @@ async def edit_category(category_id: str, category_data: Category):
     else:
         raise HTTPException(status_code=404, detail="Category not found")
 
-@app.delete("/delete-category/{category_id}")
+@categoryRouter.delete("/category/delete-category/{category_id}", tags=['Category Routes'])
 async def delete_category(category_id: str):
     coll = db["categories"]
     result = coll.delete_one({"_id": ObjectId(category_id)})

@@ -2,20 +2,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from app.config.private import *
-from app.routes.admin import app as admin_app
-from app.routes.business_form import app as business_form_app
-from app.routes.catalogue import app as catalogue_app
-from app.routes.categories import app as categories_app
-from app.routes.commodities import app as commodities_app
-from app.routes.contact_form import app as contact_form_app
-from app.routes.gallery import app as gallery_app
-from app.routes.testimonials import app as testimonials_app
-from app.routes.tradeshow import app as tradeshow_app
+from app.routes.admin import adminRouter as admin_app
+from app.routes.business_form import businessRouter as business_form_app
+from app.routes.catalogue import catalogueRouter as catalogue_app
+from app.routes.categories import categoryRouter as categories_app
+from app.routes.commodities import commodityRouter as commodities_app
+from app.routes.contact_form import contactRouter as contact_form_app
+from app.routes.gallery import galleryRouter as gallery_app
+from app.routes.testimonials import testimonyRouter as testimonials_app
+from app.routes.tradeshow import tradeshowRouter as tradeshow_app
 
 
 app = FastAPI(
-    title="Aman Website",
-    description="Import Export Website",
+    title="Content Management System",
+    description="Content Management System",
     version="1.0",
     docs_url="/api",
     redoc_url="/reapi",
