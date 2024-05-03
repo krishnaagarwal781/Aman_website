@@ -13,16 +13,14 @@ commodityRouter = APIRouter()
 # Commodity endpoints
 @commodityRouter.post("/commodity/create-commodity", response_model=Commodity, tags=['Commodity Routes'])
 async def create_commodity(commodity: Commodity):
-    coll = db["commodities"]
-    result = coll.insert_one(commodity.dict())
-    created_commodity = coll.find_one({"_id": result.inserted_id}, {"_id": 0})
+    result = commodities_collection.insert_one(commodity.dict())
+    created_commodity = commodities_collection.find_one({"_id": result.inserted_id}, {"_id": 0})
     return created_commodity
 
 @commodityRouter.patch("/commodity/edit-commodity/{commodity_id}", response_model=Commodity, tags=['Commodity Routes'])
 async def edit_commodity(commodity_id: str, commodity_data: Commodity):
-    coll = db["commodities"]
-    coll.update_one({"_id": ObjectId(commodity_id)}, {"$set": commodity_data.dict()})
-    updated_commodity = coll.find_one({"_id": ObjectId(commodity_id)}, {"_id": 0})
+    commodities_collection.update_one({"_id": ObjectId(commodity_id)}, {"$set": commodity_data.dict()})
+    updated_commodity = commodities_collection.find_one({"_id": ObjectId(commodity_id)}, {"_id": 0})
     if updated_commodity:
         return updated_commodity
     else:
@@ -30,8 +28,7 @@ async def edit_commodity(commodity_id: str, commodity_data: Commodity):
 
 @commodityRouter.post("/commodity/delete-commodity/{commodity_id}", tags=['Commodity Routes'])
 async def delete_commodity(commodity_id: str):
-    coll = db["commodities"]
-    result = coll.delete_one({"_id": ObjectId(commodity_id)})
+    result = commodities_collection.delete_one({"_id": ObjectId(commodity_id)})
     if result.deleted_count == 1:
         return {"message": "Commodity deleted successfully"}
     else:
@@ -39,6 +36,5 @@ async def delete_commodity(commodity_id: str):
 
 @commodityRouter.get("/commodity/get-all-commodity", response_model=list[Commodity], tags=['Commodity Routes'])
 async def get_all_commodities():
-    coll = db["commodities"]
-    commodities = list(coll.find({}, {"_id": 0}))
+    commodities = list(commodities_collection.find({}, {"_id": 0}))
     return commodities

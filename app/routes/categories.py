@@ -13,22 +13,19 @@ categoryRouter = APIRouter()
 # Category endpoints
 @categoryRouter.get("/category/all-category", response_model=list[Category], tags=['Category Routes'])
 async def get_all_categories():
-    coll = db["categories"]
-    categories = list(coll.find({}, {"_id": 0}))
+    categories = list(categories_collection.find({}, {"_id": 0}))
     return categories
 
 @categoryRouter.post("/category/add-category", response_model=Category, tags=['Category Routes'])
 async def add_category(category: Category):
-    coll = db["categories"]
-    result = coll.insert_one(category.dict())
-    created_category = coll.find_one({"_id": result.inserted_id}, {"_id": 0})
+    result = categories_collection.insert_one(category.dict())
+    created_category = categories_collection.find_one({"_id": result.inserted_id}, {"_id": 0})
     return created_category
 
 @categoryRouter.patch("/category/edit-category/{category_id}", response_model=Category, tags=['Category Routes'])
 async def edit_category(category_id: str, category_data: Category):
-    coll = db["categories"]
-    coll.update_one({"_id": ObjectId(category_id)}, {"$set": category_data.dict()})
-    updated_category = coll.find_one({"_id": ObjectId(category_id)}, {"_id": 0})
+    categories_collection.update_one({"_id": ObjectId(category_id)}, {"$set": category_data.dict()})
+    updated_category = categories_collection.find_one({"_id": ObjectId(category_id)}, {"_id": 0})
     if updated_category:
         return updated_category
     else:
@@ -36,8 +33,7 @@ async def edit_category(category_id: str, category_data: Category):
 
 @categoryRouter.delete("/category/delete-category/{category_id}", tags=['Category Routes'])
 async def delete_category(category_id: str):
-    coll = db["categories"]
-    result = coll.delete_one({"_id": ObjectId(category_id)})
+    result = categories_collection.delete_one({"_id": ObjectId(category_id)})
     if result.deleted_count == 1:
         return {"message": "Category deleted successfully"}
     else:

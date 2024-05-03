@@ -14,22 +14,19 @@ catalogueRouter = APIRouter()
 # Catalogue endpoints
 @catalogueRouter.get("/catalogue/all-catalogue", response_model=list[Catalogue], tags=['Catalogue Routes'])
 async def get_all_catalogues():
-    coll = db["catalogues"]
-    catalogues = list(coll.find({}, {"_id": 0}))
+    catalogues = list(catalogues_collection.find({}, {"_id": 0}))
     return catalogues
 
 @catalogueRouter.post("/catalogue/create-catalogue", response_model=Catalogue, tags=['Catalogue Routes'])
 async def create_catalogue(catalogue: Catalogue):
-    coll = db["catalogues"]
-    result = coll.insert_one(catalogue.dict())
-    created_catalogue = coll.find_one({"_id": result.inserted_id}, {"_id": 0})
+    result = catalogues_collection.insert_one(catalogue.dict())
+    created_catalogue = catalogues_collection.find_one({"_id": result.inserted_id}, {"_id": 0})
     return created_catalogue
 
 @catalogueRouter.patch("/catalogue/edit-catalogue/{catalogue_id}", response_model=Catalogue, tags=['Catalogue Routes'])
 async def edit_catalogue(catalogue_id: str, catalogue_data: Catalogue):
-    coll = db["catalogues"]
-    coll.update_one({"_id": ObjectId(catalogue_id)}, {"$set": catalogue_data.dict()})
-    updated_catalogue = coll.find_one({"_id": ObjectId(catalogue_id)}, {"_id": 0})
+    catalogues_collection.update_one({"_id": ObjectId(catalogue_id)}, {"$set": catalogue_data.dict()})
+    updated_catalogue = catalogues_collection.find_one({"_id": ObjectId(catalogue_id)}, {"_id": 0})
     if updated_catalogue:
         return updated_catalogue
     else:
@@ -37,8 +34,7 @@ async def edit_catalogue(catalogue_id: str, catalogue_data: Catalogue):
 
 @catalogueRouter.post("/catalogue/delete-catalogue/{catalogue_id}", tags=['Catalogue Routes'])
 async def delete_catalogue(catalogue_id: str):
-    coll = db["catalogues"]
-    result = coll.delete_one({"_id": ObjectId(catalogue_id)})
+    result = catalogues_collection.delete_one({"_id": ObjectId(catalogue_id)})
     if result.deleted_count == 1:
         return {"message": "Catalogue deleted successfully"}
     else:

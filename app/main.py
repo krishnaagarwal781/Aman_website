@@ -14,8 +14,8 @@ from app.routes.tradeshow import tradeshowRouter as tradeshow_app
 
 
 app = FastAPI(
-    title="Content Management System",
-    description="Content Management System",
+    title="Import Export Website",
+    description="Import Export Website",
     version="1.0",
     docs_url="/api",
     redoc_url="/reapi",
