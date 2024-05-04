@@ -14,13 +14,13 @@ async def get_all_tradeshows():
 
 @tradeshowRouter.post("/tradeshow/create-tradeshow", response_model=Tradeshow, tags=['Tradeshow Routes'])
 async def create_tradeshow(tradeshow: Tradeshow):
-    result = tradeshows_collection.insert_one(tradeshow.dict())
+    result = tradeshows_collection.insert_one(tradeshow.model_dump())
     created_tradeshow = tradeshows_collection.find_one({"_id": result.inserted_id}, {"_id": 0})
     return created_tradeshow
 
 @tradeshowRouter.patch("/tradeshow/edit-tradeshow/{tradeshow_id}", response_model=Tradeshow, tags=['Tradeshow Routes'])
 async def edit_tradeshow(tradeshow_id: str, tradeshow_data: Tradeshow):
-    tradeshows_collection.update_one({"_id": ObjectId(tradeshow_id)}, {"$set": tradeshow_data.dict()})
+    tradeshows_collection.update_one({"_id": ObjectId(tradeshow_id)}, {"$set": tradeshow_data.model_dump()})
     updated_tradeshow = tradeshows_collection.find_one({"_id": ObjectId(tradeshow_id)}, {"_id": 0})
     if updated_tradeshow:
         return updated_tradeshow

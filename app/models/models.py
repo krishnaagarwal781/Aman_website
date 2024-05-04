@@ -1,21 +1,16 @@
 from pydantic import BaseModel
+from typing import Optional, List
+from datetime import datetime
 
 class AdminRegister(BaseModel):
+    full_name: str
     email: str
     password: str
-    first_name: str
-    last_name: str
 
 class AdminLogin(BaseModel):
     email: str
     password: str
 
-class AdminDetails(BaseModel):
-    email: str
-    password: str
-    first_name: str
-    last_name: str
-    user_id: str
 
 class Update(BaseModel):
     title: str
@@ -32,21 +27,26 @@ class BusinessForm(BaseModel):
     company_name: str
     contact_person: str
     email: str
-    mobile: str
+    mobile: int
+    city: str
+    state: str
     country: str
+    address: str
     details: str
 
 class Catalogue(BaseModel):
     catalogue_title: str
     catalogue_description: str
-    url_link: str
+    image_url: str
+    pdf_url: str
 
 class Category(BaseModel):
     category_name: str
     category_rank: int
     category_image: str
-    commodities: list = []
-    created_on: str
+    # commodities: list = []
+    commodities: Optional[List] = []
+    created_on: datetime
 
 class Commodity(BaseModel):
     commodity_category: str
@@ -73,12 +73,12 @@ class ContactForm(BaseModel):
 
 class GalleryItem(BaseModel):
     gallery_title: str
-    images: list
+    images: Optional[List] = []
 
 class Gallery(BaseModel):
     _id: str
     gallery_title: str
-    images: list
+    images: Optional[List] = []
 
 class Testimonial(BaseModel):
     testimonial_image: str

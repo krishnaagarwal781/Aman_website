@@ -14,13 +14,13 @@ async def get_all_updates():
 
 @updateRouter.post("/update/create-update", response_model=Update, tags=['Update Routes'])
 async def create_update(update: Update):
-    result = update_collection.insert_one(update.dict())
+    result = update_collection.insert_one(update.model_dump())
     created_update = update_collection.find_one({"_id": result.inserted_id}, {"_id": 0})
     return created_update
 
 @updateRouter.patch("/update/edit-update/{update_id}", response_model=Update, tags=['Update Routes'])
 async def edit_update(update_id: str, update_data: Update):
-    update_collection.update_one({"_id": ObjectId(update_id)}, {"$set": update_data.dict()})
+    update_collection.update_one({"_id": ObjectId(update_id)}, {"$set": update_data.model_dump()})
     updated_update = update_collection.find_one({"_id": ObjectId(update_id)}, {"_id": 0})
     if updated_update:
         return updated_update
